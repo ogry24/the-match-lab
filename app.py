@@ -44,7 +44,6 @@ def load_data():
             data[column] = pd.to_numeric(data[column], errors="coerce")
     data = data.dropna(subset=["match", "age", "gender"]).copy()
     data["match"] = data["match"].astype(int)
-    data["age_band"] = (data["age"] // 5 * 5).astype(int).astype(str) + "–" + (data["age"] // 5 * 5 + 4).astype(int).astype(str)
     data["gender_label"] = data["gender"].astype(str).str.capitalize()
     return data
 
@@ -152,7 +151,7 @@ with overview_tab:
             )
             fig.update_traces(hovertemplate="Liking: %{x}<br>Mutual match rate: %{y:.1%}<br>Dates: %{customdata[0]}<extra></extra>", line=dict(width=3))
             fig.update_layout(yaxis_tickformat=".0%", xaxis=dict(dtick=1, title="Participant’s overall liking score"), yaxis_title="Share ending in mutual match", margin=dict(l=5,r=10,t=15,b=5), height=360, plot_bgcolor="#fffefa", paper_bgcolor="#fffefa")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
         else:
             st.info("There are no liking scores in this filtered sample.")
     with right:
@@ -169,7 +168,7 @@ with overview_tab:
             fig = px.bar(outcome, x="Dates", y="Outcome", orientation="h", text="Dates", color="Outcome", color_discrete_map={"Both said yes":"#e8755e", "Participant said yes":"#d8a28e", "Partner said yes":"#8f9e89", "Neither said yes":"#d8d8cf"})
             fig.update_traces(textposition="outside", cliponaxis=False)
             fig.update_layout(showlegend=False, xaxis_title="Number of dates", yaxis_title="", margin=dict(l=5,r=30,t=15,b=5), height=360, plot_bgcolor="#fffefa", paper_bgcolor="#fffefa")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
     st.markdown('<div class="note"><b>Read it carefully:</b> these are associations in one historical student speed-dating study. They do not show that any single trait causes a match.</div>', unsafe_allow_html=True)
 
 with preferences_tab:
@@ -188,12 +187,12 @@ with preferences_tab:
         st.subheader("Qualities people say matter")
         fig = px.bar(pref_frame.sort_values("Stated importance"), x="Stated importance", y="Quality", orientation="h", color="Stated importance", color_continuous_scale=["#e7d9c8", "#e8755e"])
         fig.update_layout(coloraxis_showscale=False, xaxis_title="Average importance (0–100%)", yaxis_title="", margin=dict(l=5,r=5,t=15,b=5), height=400, plot_bgcolor="#fffefa", paper_bgcolor="#fffefa")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     with right:
         st.subheader("Average ratings on the date")
         fig = px.bar(rating_frame, x="Average rating", y="Quality", color="Outcome", barmode="group", orientation="h", color_discrete_map={"No mutual match":"#aab0a5", "Mutual match":"#e8755e"})
         fig.update_layout(xaxis_title="Average partner rating (1–10)", yaxis_title="", legend_title="", margin=dict(l=5,r=5,t=15,b=5), height=400, plot_bgcolor="#fffefa", paper_bgcolor="#fffefa")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
     st.caption("The left chart records pre-date stated preferences; the right charts ratings after meeting. These measures are related but not directly comparable.")
 
 with scenario_tab:
@@ -235,7 +234,7 @@ with about_tab:
     st.header("A real experiment, with important limits")
     st.write("This dataset comes from speed-dating events run at Columbia University between 2002 and 2004. Participants met for short dates, rated each other, and recorded whether they wanted to meet again. One row represents one participant’s view of one date.")
     st.markdown("#### How this app handles the data")
-    st.markdown("- Converts outcome, age, wave, and rating fields to numeric types where possible.\n- Removes rows missing the core outcome, age, or participant gender.\n- Uses the recorded mutual-match outcome (`match`) for match-rate comparisons.\n- Groups ages into five-year bands for exploration and lets you filter by age, gender, and study wave.")
+    st.markdown("- Converts outcome, age, wave, and rating fields to numeric types where possible.\n- Removes rows missing the core outcome, age, or participant gender.\n- Uses the recorded mutual-match outcome (`match`) for match-rate comparisons.\n- Provides interactive filters for age, participant gender, and study wave.")
     st.markdown("#### Limitations")
     st.markdown("- The sample is historical and drawn from students at one university; it does not represent everyone.\n- A date-level row is directional, so two rows may describe the two people’s perspectives on the same date.\n- The charts describe associations and cannot establish cause and effect.\n- Categories and measures reflect the original study questionnaire and its time period.")
     st.markdown("#### Dataset and references")
