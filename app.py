@@ -205,12 +205,18 @@ with scenario_tab:
     for i, trait in enumerate(TRAIT_RATING_COLUMNS):
         with [c1, c2, c3][i % 3]:
             inputs[trait] = st.slider(f"Minimum {trait.lower()} rating", 1, 10, 6, key=f"scenario_{trait}")
-    required_traits = st.multiselect("Include qualities in this scenario", list(TRAIT_RATING_COLUMNS), default=["attractive_o", "funny_o"])
+    required_traits = st.multiselect(
+        "Include qualities in this scenario",
+        list(TRAIT_RATING_COLUMNS),
+        default=["Attractiveness", "Humor"],
+    )
     if required_traits:
-        scenario = filtered.dropna(subset=required_traits).copy()
+        required_columns = [TRAIT_RATING_COLUMNS[trait] for trait in required_traits]
+        scenario = filtered.dropna(subset=required_columns).copy()
         meets = pd.Series(True, index=scenario.index)
-        for column in required_traits:
-            meets &= scenario[column] >= inputs[column]
+        for trait in required_traits:
+            column = TRAIT_RATING_COLUMNS[trait]
+            meets &= scenario[column] >= inputs[trait]
         similar = scenario.loc[meets]
         if len(similar):
             scenario_rate = similar["match"].mean()
